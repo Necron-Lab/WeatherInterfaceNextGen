@@ -1,0 +1,145 @@
+﻿@page "/"
+@using WeatherInterface.Data
+@using MudBlazor
+@using System.Net.Sockets
+@inject WeatherService WeatherService
+@inject ISnackbar Snackbar
+
+<MudContainer>
+    <MudPaper Elevation="3" Padding="16px">
+        <MudSelect Label="Standort auswählen" @bind-Value="selectedLocation" Variant="Variant.Filled" Color="Color.Primary">
+            @foreach (var location in predefinedLocations)
+            {
+                <MudSelectItem Value="location">@location</MudSelectItem>
+            }
+        </MudSelect>
+
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="SearchWeather">Suchen</MudButton>
+        
+        @if (weatherData == null)
+        {
+            <p class="text-center">Wetterdaten werden geladen...</p>
+        }
+        else
+        {
+
+            <div class="text-center">
+                <h1 class="mb-2">Wettervorhersage</h1>
+            </div>
+
+            <div style="display: flex; justify-content: space-between">
+                <div style="margin-top: -10px; margin-left: 35px">
+                    <MudTypography Variant="TypographyVariant.body1" style="font-size: 45px">
+                        @weatherData.Current.TempC °C
+                    </MudTypography>
+                </div>
+
+                <div class="text-center;" style="font-size: 30px">
+                    <MudTypography Variant="TypographyVariant.h6">
+                        @weatherData.Location.Name, @weatherData.Location.Country
+                    </MudTypography>
+ 
+                </div>
+
+                <div style="display: block; margin-right: 20px">
+                    <div style="margin-top: -60px">
+                        <img style="width: 140px " src="@weatherData.Current.Condition.Icon" alt="Wettervorhersage" class="mb-2">
+                    </div>
+                    <div style="text-align: center; font-size: 20px; margin-top: -35px; margin-left: -10px">
+                        <MudTypography Variant="TypographyVariant.body1">
+                            @weatherData.Current.Condition.Text
+                        </MudTypography>
+                    </div>
+                </div>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; padding: 10px">
+                <div style="font-size: 25px">
+                    <div>
+                        <MudTypography Variant="TypographyVariant.body2">
+                            Gefühlte Temperatur:
+                        </MudTypography>
+                        <MudTypography Variant="TypographyVariant.body1">
+                            @weatherData.Current.FeelsLikeC °C
+                        </MudTypography>
+                    </div>
+
+                    <div>
+                        <MudTypography Variant="TypographyVariant.body2">
+                            Windgeschwindigkeit:
+                        </MudTypography>
+                        <MudTypography Variant="TypographyVariant.body1">
+                            @weatherData.Current.WindKph km/h
+                        </MudTypography>
+                    </div>
+
+                    <div>
+                        <MudTypography Variant="TypographyVariant.body2">
+                            Luftfeuchtigkeit:
+                        </MudTypography>
+                        <MudTypography Variant="TypographyVariant.body1">
+                            @weatherData.Current.Humidity %
+                        </MudTypography>
+                    </div>
+                </div>
+
+                <div class="mt-4" style="text-align: right; justify-content: end; position: relative; top: 75px">
+                    <MudTypography Variant="TypographyVariant.body2">
+                        Lokale Zeit: @weatherData.Location.Localtime
+                    </MudTypography>
+                </div>
+            </div>
+        }
+    </MudPaper>
+</MudContainer>
+
+@code {
+    private Response weatherData;
+    private string selectedLocation;
+    private List<string> predefinedLocations = new List<string> {"St. Gallen", "Bern", "Luzern", "Basel", "Genf", "Appenzell", "Gais AR", "Genf", "Fribourg", "Lugano", "New York", "Beijing", "Abuja" };
+
+    private async Task SearchWeather()
+    {
+        // Prüfen, ob ein Standort ausgewählt wurde
+        if (!string.IsNullOrWhiteSpace(selectedLocation))
+        {
+            // Aufrufen des WeatherService mit dem ausgewählten Standort
+            weatherData = await WeatherService.GetWeatherDataByLocation(selectedLocation);
+
+            // Senden des Standorts an den WeatherDataFetcher
+            await SendLocationToFetcher(selectedLocation);
+        }
+        else
+        {
+            Snackbar.Add("Bitte wählen Sie einen Standort aus.", Severity.Error);
+        }
+    }
+
+
+    private async Task SendLocationToFetcher(string location)
+{
+    try
+    {
+        using (var client = new TcpClient())
+        {
+            await client.ConnectAsync("localhost", 5000);
+            using (var stream = client.GetStream())
+            using (var writer = new StreamWriter(stream))
+            {
+                await writer.WriteLineAsync(location);
+                // Weitere Verarbeitung nach Bedarf
+            }
+        }
+    }
+    catch (Exception ex)
+    {
+        Snackbar.Add($"Fehler beim Senden der Location an den WeatherDataFetcher: {ex.Message}", Severity.Error);
+    }
+}
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Lade den Datensatz mit der höchsten ID von der Datenbank
+        weatherData = await WeatherService.GetWeatherDataWithLatestDate();
+    }
+}
