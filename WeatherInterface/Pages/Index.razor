@@ -106,8 +106,6 @@
             // Aufrufen des WeatherService mit dem ausgewählten Standort
             weatherData = await WeatherService.GetWeatherDataByLocation(cityName);
 
-            // Senden des Standorts an den WeatherDataFetcher
-            await SendLocationToFetcher(cityName);
         }
         else
         {
