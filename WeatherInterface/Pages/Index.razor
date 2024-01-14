@@ -7,7 +7,7 @@
 
 <MudContainer>
     <MudPaper Elevation="3" Padding="16px">
-        <MudSelect Label="Standort auswählen" @bind-Value="selectedLocation" Variant="Variant.Filled" Color="Color.Primary">
+        <MudSelect Label="Standort auswählen" @bind-Value="cityName" Variant="Variant.Filled" Color="Color.Primary">
             @foreach (var location in predefinedLocations)
             {
                 <MudSelectItem Value="location">@location</MudSelectItem>
@@ -95,19 +95,19 @@
 
 @code {
     private Response weatherData;
-    private string selectedLocation;
+    private string cityName;
     private List<string> predefinedLocations = new List<string> {"St. Gallen", "Bern", "Luzern", "Basel", "Genf", "Appenzell", "Genf", "Fribourg", "Lugano", "New York", "Beijing", "Abuja" };
 
     private async Task SearchWeather()
     {
         // Prüfen, ob ein Standort ausgewählt wurde
-        if (!string.IsNullOrWhiteSpace(selectedLocation))
+        if (!string.IsNullOrWhiteSpace(cityName))
         {
             // Aufrufen des WeatherService mit dem ausgewählten Standort
-            weatherData = await WeatherService.GetWeatherDataByLocation(selectedLocation);
+            weatherData = await WeatherService.GetWeatherDataByLocation(cityName);
 
             // Senden des Standorts an den WeatherDataFetcher
-            await SendLocationToFetcher(selectedLocation);
+            await SendLocationToFetcher(cityName);
         }
         else
         {
