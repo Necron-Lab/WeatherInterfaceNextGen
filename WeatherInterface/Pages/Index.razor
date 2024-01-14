@@ -116,7 +116,7 @@
     }
 
 
-    private async Task SendLocationToFetcher(string location)
+    private async Task SendLocationToFetcher(string cityName)
 {
     try
     {
@@ -126,7 +126,7 @@
             using (var stream = client.GetStream())
             using (var writer = new StreamWriter(stream))
             {
-                await writer.WriteLineAsync(location);
+                await writer.WriteLineAsync(cityName);
                 // Weitere Verarbeitung nach Bedarf
             }
         }
