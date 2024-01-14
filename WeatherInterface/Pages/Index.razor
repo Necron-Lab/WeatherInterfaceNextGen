@@ -115,28 +115,6 @@
         }
     }
 
-
-    private async Task SendLocationToFetcher(string cityName)
-{
-    try
-    {
-        using (var client = new TcpClient())
-        {
-                await client.ConnectAsync("weather_fetcher", 13000);
-            using (var stream = client.GetStream())
-            using (var writer = new StreamWriter(stream))
-            {
-                await writer.WriteLineAsync(cityName);
-                // Weitere Verarbeitung nach Bedarf
-            }
-        }
-    }
-    catch (Exception ex)
-    {
-        Snackbar.Add($"Fehler beim Senden der Location an den WeatherDataFetcher: {ex.Message}", Severity.Error);
-    }
-}
-
     protected override async Task OnInitializedAsync()
     {
         // Lade den Datensatz mit der höchsten ID von der Datenbank
