@@ -6,6 +6,7 @@ using MudBlazor.Services;
 using Microsoft.AspNetCore;
 using System.Net;
 using WeatherApp;
+using WeatherInterface.Data;
 
 WebHost.CreateDefaultBuilder(args)
     .UseKestrel(options =>
@@ -21,6 +22,7 @@ builder.Configuration.AddEnvironmentVariables();
 
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
+builder.Services.Configure<ApiSettings>(builder.Configuration.GetSection("ApiSettings"));
 
 var gitHubApi = RestService.For<IWeatherApi>("https://api.weatherapi.com/");
 builder.Services.AddSingleton(gitHubApi);

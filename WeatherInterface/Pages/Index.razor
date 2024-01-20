@@ -5,8 +5,10 @@
 @using System.Net.Http
 @using System.Threading.Tasks
 @using Newtonsoft.Json
+@using Microsoft.Extensions.Options
 @inject WeatherService WeatherService
 @inject ISnackbar Snackbar
+@inject IOptions<ApiSettings> ApiSettings
 
 <MudContainer>
     <MudPaper Elevation="3" Padding="16px">
@@ -126,7 +128,7 @@
         {
             using (HttpClient httpClient = new HttpClient())
             {
-                string apiUrl = "http://localhost:5000/changestate/" + state;
+                string apiUrl = $"{ApiSettings.Value.BaseUrl}" + state;
 
                 await httpClient.GetAsync(apiUrl);
             }
