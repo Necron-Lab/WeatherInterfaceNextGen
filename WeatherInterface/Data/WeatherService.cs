@@ -1,4 +1,5 @@
 ﻿using Marten;
+using System.Xml.Linq;
 using WeatherInterface.Data;
 
 public class WeatherService
@@ -10,13 +11,14 @@ public class WeatherService
         _documentStore = documentStore;
     }
 
-    public async Task<Response> GetWeatherDataWithLatestDate()
+    public async Task<Response> GetWeatherDataWithLocationAndLatestDate(string location)
     {
         using var session = _documentStore.QuerySession();
 
-        // Lade den Datensatz mit der höchsten ID
-        var weatherData = session.Query<Response>().OrderByDescending(x => x.dateInserted).FirstOrDefault();
-
+        // Lade den neusten Datensatz eines bestimmten Standorts
+        var weatherData = session.Query<Response>()
+        .Where(x => x.Location.Name.ToLower() == location).OrderByDescending(x => x.dateInserted).FirstOrDefault();
+        
         return weatherData;
     }
 

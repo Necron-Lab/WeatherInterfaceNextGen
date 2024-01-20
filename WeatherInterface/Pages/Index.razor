@@ -96,15 +96,15 @@
 @code {
     private Response weatherData;
     private string cityName;
-    private List<string> predefinedLocations = new List<string> {"St. Gallen", "Bern", "Luzern", "Basel", "Genf", "Appenzell", "Genf", "Fribourg", "Lugano", "New York", "Beijing", "Abuja" };
+    private List<string> predefinedLocations = new List<string> { "Saint Gallen", "Zürichsee", "Bern", "Luzern", "Basel", "Genf", "Appenzell", "Gais", "Genf", "Fribourg", "Lugano", "New York", "Beijing", "Abuja" };
 
     private async Task SearchWeather()
     {
         // Prüfen, ob ein Standort ausgewählt wurde
         if (!string.IsNullOrWhiteSpace(cityName))
         {
-            // Aufrufen des WeatherService mit dem ausgewählten Standort
-            weatherData = await WeatherService.GetWeatherDataByLocation(cityName);
+            // Aufrufen des WeatherService mit dem ausgewählten Standort und neuesten Datum
+            weatherData = await WeatherService.GetWeatherDataWithLocationAndLatestDate(cityName);
 
         }
         else
@@ -113,9 +113,4 @@
         }
     }
 
-    protected override async Task OnInitializedAsync()
-    {
-        // Lade den Datensatz mit der höchsten ID von der Datenbank
-        weatherData = await WeatherService.GetWeatherDataWithLatestDate();
-    }
-}
+} 
