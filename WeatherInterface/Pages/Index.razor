@@ -93,6 +93,10 @@
                 </div>
             </div>
         }
+        <div>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="() => StateChanged(false)">Kill WeatherFetcher</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="() => StateChanged(true)">Continue WeatherFetcher</MudButton>
+        </div>
     </MudPaper>
 </MudContainer>
 
@@ -115,4 +119,21 @@
             Snackbar.Add("Bitte wählen Sie einen Standort aus.", Severity.Error);
         }
     }
-} 
+
+    private async Task StateChanged(bool state)
+    {
+        try
+        {
+            using (HttpClient httpClient = new HttpClient())
+            {
+                string apiUrl = "http://localhost:5000/changestate/" + state;
+
+                await httpClient.GetAsync(apiUrl);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.ToString());
+        }
+    }
+}

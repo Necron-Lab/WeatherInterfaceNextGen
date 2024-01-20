@@ -1,8 +1,3 @@
-using Microsoft.AspNetCore.Components.Web;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
-using WeatherInterface.Data;
 using Marten;
 using Weasel.Core;
 using Refit;
