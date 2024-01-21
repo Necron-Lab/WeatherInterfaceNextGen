@@ -131,11 +131,14 @@
                 string apiUrl = $"{ApiSettings.Value.BaseUrl}" + state;
 
                 await httpClient.GetAsync(apiUrl);
+
+                Snackbar.Add("Request sent!", Severity.Info);
             }
         }
         catch (Exception ex)
         {
             Console.WriteLine(ex.ToString());
+            Snackbar.Add("Something went wrong!", Severity.Error);
         }
     }
 }
